@@ -7,6 +7,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
 import { ProductsModule } from './products/products.module';
+import { DeliveryZonesModule } from './delivery-zones/delivery-zones.module';
 import { UPLOADS_ROOT } from './common/constants/paths.constant';
 
 @Module({
@@ -32,6 +33,7 @@ import { UPLOADS_ROOT } from './common/constants/paths.constant';
     AuthModule,
     CategoriesModule,
     ProductsModule,
+    DeliveryZonesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
