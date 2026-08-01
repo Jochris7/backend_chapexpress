@@ -42,7 +42,7 @@ export class Order {
   @Column()
   deliveryZoneId: string;
 
-  @ManyToOne(() => DeliveryZone)
+  @ManyToOne(() => DeliveryZone, (deliveryZone) => deliveryZone.orders)
   @JoinColumn({ name: 'deliveryZoneId' })
   deliveryZone: DeliveryZone;
 

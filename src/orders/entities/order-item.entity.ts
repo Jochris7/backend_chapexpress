@@ -23,7 +23,7 @@ export class OrderItem {
   @Column()
   productId: string;
 
-  @ManyToOne(() => Product)
+  @ManyToOne(() => Product, (product) => product.orderItems)
   @JoinColumn({ name: 'productId' })
   product: Product;
 

@@ -1,98 +1,173 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# ChapExpress — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API NestJS pour la plateforme e-commerce ChapExpress (produits, catégories, zones de livraison, commandes, authentification admin).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Prérequis
 
-## Description
+- Node.js 20+
+- npm
+- PostgreSQL 14+ (local, Docker, ou distant)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
-
-## Project setup
+## Installation
 
 ```bash
-$ npm install
+npm install
 ```
 
-## Compile and run the project
+## Configuration
+
+Copie `.env.example` vers `.env` puis ajuste les valeurs si besoin :
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cp .env.example .env
 ```
 
-## Run tests
+| Variable | Description |
+|---|---|
+| `DATABASE_HOST` | Hôte PostgreSQL (`localhost` en dev) |
+| `DATABASE_PORT` | Port PostgreSQL (`5432` par défaut) |
+| `DB_USERNAME` | Utilisateur PostgreSQL |
+| `DB_PASSWORD` | Mot de passe PostgreSQL |
+| `DATABASE_NAME` | Nom de la base (`ecommerce`) |
+| `JWT_SECRET` | Secret utilisé pour signer les tokens JWT admin — à changer en production |
+| `PORT` | Port d'écoute de l'API (`3001` par défaut) |
+
+## Configurer PostgreSQL en local
+
+### Option A — avec Docker (recommandé)
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+docker run --name chapexpress-postgres \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD=postgres \
+  -e POSTGRES_DB=ecommerce \
+  -p 5432:5432 \
+  -d postgres:16
 ```
 
-## Deployment
+Adapte `POSTGRES_USER` / `POSTGRES_PASSWORD` pour qu'ils correspondent à `DB_USERNAME` / `DB_PASSWORD` dans ton `.env`.
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Pour l'arrêter / le relancer plus tard :
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker stop chapexpress-postgres
+docker start chapexpress-postgres
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+### Option B — sans Docker
 
-## Resources
+1. Installe PostgreSQL localement (postgresql.org, ou via le gestionnaire de paquets de ton OS).
+2. Crée la base de données :
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+createdb -U postgres ecommerce
+```
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+ou depuis `psql` :
 
-## Support
+```sql
+CREATE DATABASE ecommerce;
+```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+3. Renseigne les identifiants correspondants dans `.env`.
 
-## Stay in touch
+## Synchronisation du schéma
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Le projet n'utilise pas encore de migrations TypeORM manuelles. `TypeOrmModule` est configuré avec `synchronize: true` (voir `src/app.module.ts`) : au démarrage, TypeORM compare les entités du code aux tables existantes et applique automatiquement les différences (création des tables, colonnes, types enum, contraintes de clé étrangère...).
 
-## License
+Aucune commande à lancer : il suffit de démarrer le serveur (étape suivante) avec une base PostgreSQL vide et accessible — les tables sont créées automatiquement au premier démarrage.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+> `synchronize: true` est acceptable en développement local mais ne doit jamais être utilisé en production (risque de perte de données lors de changements de schéma) — il faudra migrer vers de vraies migrations TypeORM avant un déploiement.
+
+## Démarrer le serveur
+
+```bash
+npm run start:dev
+```
+
+L'API écoute sur `http://localhost:3001`. Le CORS est configuré pour n'accepter que les requêtes venant de `http://localhost:3000` (le frontend Next.js), avec `credentials: true`.
+
+## Créer le premier compte admin
+
+Il n'y a qu'un seul compte admin pour toute la plateforme. Une fois le serveur démarré, appelle l'endpoint de seed une seule fois :
+
+```bash
+curl -X POST http://localhost:3001/auth/seed-admin \
+  -H "Content-Type: application/json" \
+  -d '{ "email": "ton-email@exemple.com", "password": "UnMotDePasseSolide123" }'
+```
+
+Cet endpoint ne fait rien (`409 Conflict`) si un compte admin existe déjà — il ne peut donc servir qu'une seule fois. Récupère ensuite un token via `POST /auth/login` avec ces mêmes identifiants (voir tableau des endpoints ci-dessous).
+
+## Seed des zones de livraison
+
+Les 11 zones de livraison d'Abidjan (Yopougon, Cocody, Marcory, Abobo, Anyama, Attécoubé, Koumassi, Plateau, Port-Bouet, Treichville, Expédition) peuvent être insérées en une fois :
+
+```bash
+curl -X POST http://localhost:3001/delivery-zones/seed
+```
+
+Cet endpoint est public et idempotent : il ne fait rien s'il existe déjà des zones en base, donc il est sans risque de le rappeler.
+
+## Endpoints disponibles
+
+Toutes les routes protégées attendent un header `Authorization: Bearer <token>` obtenu via `POST /auth/login`.
+
+### Auth
+
+| Méthode | URL | Accès | Body |
+|---|---|---|---|
+| POST | `/auth/login` | Public | `{ email, password }` → `{ access_token }` |
+| POST | `/auth/seed-admin` | Public (une seule fois, 409 si admin déjà existant) | `{ email, password }` |
+| GET | `/auth/me` | Protégé | — |
+
+### Categories
+
+| Méthode | URL | Accès | Body |
+|---|---|---|---|
+| GET | `/categories` | Public | — (triées par `name`) |
+| POST | `/categories` | Protégé | `{ name }` |
+| DELETE | `/categories/:id` | Protégé | — (400 si des produits utilisent cette catégorie) |
+
+### Products
+
+| Méthode | URL | Accès | Body |
+|---|---|---|---|
+| GET | `/products` | Public | Query params optionnels : `categoryId`, `search`, `includeOutOfStock` (`true`/`false`) |
+| GET | `/products/:id` | Public | — |
+| POST | `/products` | Protégé | `multipart/form-data` : `title`, `description?`, `categoryId`, `price`, `quantity`, `size?`, `image` (fichier) |
+| PATCH | `/products/:id` | Protégé | `multipart/form-data`, tous les champs optionnels, `image` optionnelle (remplace l'ancienne) |
+| DELETE | `/products/:id` | Protégé | — (400 si le produit est référencé par des commandes) |
+
+Images accessibles publiquement via `http://localhost:3001/uploads/products/<fichier>`.
+
+### Delivery Zones
+
+| Méthode | URL | Accès | Body |
+|---|---|---|---|
+| GET | `/delivery-zones` | Public | — (triées par `name`) |
+| POST | `/delivery-zones/seed` | Public, idempotent | — |
+| POST | `/delivery-zones` | Protégé | `{ name, city, fee }` |
+| PATCH | `/delivery-zones/:id` | Protégé | `{ name?, city?, fee? }` |
+| DELETE | `/delivery-zones/:id` | Protégé | — |
+
+### Orders
+
+| Méthode | URL | Accès | Body |
+|---|---|---|---|
+| POST | `/orders` | Public | `{ customerName, phone1, phone2?, city, deliveryZoneId, district?, promoCode?, paymentMethod: "wave"\|"cash_on_delivery", items: [{ productId, quantity, size? }] }` |
+| GET | `/orders` | Protégé | — (triées par `createdAt` décroissant, avec items et deliveryZone chargés) |
+| GET | `/orders/:id` | Protégé | — |
+| PATCH | `/orders/:id/status` | Protégé | `{ status: "pending"\|"paid"\|"delivered"\|"cancelled" }` |
+
+`POST /orders` vérifie le stock de chaque article, calcule `subtotal`/`total`, décrémente le stock et crée la commande dans une transaction unique : soit tout réussit, soit rien n'est modifié en base.
+
+## Scripts utiles
+
+```bash
+npm run start:dev   # démarrage en mode watch
+npm run build       # compilation TypeScript
+npm run lint         # ESLint (avec --fix)
+npm run test         # tests unitaires
+npm run test:e2e     # tests end-to-end
+```
