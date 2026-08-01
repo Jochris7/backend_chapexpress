@@ -2,11 +2,12 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { CategoriesModule } from './categories/categories.module';
+import { ProductsModule } from './products/products.module';
+import { UPLOADS_ROOT } from './common/constants/paths.constant';
 
 @Module({
   imports: [
@@ -25,11 +26,12 @@ import { CategoriesModule } from './categories/categories.module';
       }),
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'uploads'),
+      rootPath: UPLOADS_ROOT,
       serveRoot: '/uploads',
     }),
     AuthModule,
     CategoriesModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

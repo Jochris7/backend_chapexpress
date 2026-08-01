@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   NotFoundException,
@@ -6,6 +7,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import { Category } from './entities/category.entity';
+import { Product } from '../products/entities/product.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { slugify } from '../common/utils/slugify.util';
 
@@ -14,6 +16,8 @@ export class CategoriesService {
   constructor(
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
   findAll() {
@@ -42,6 +46,16 @@ export class CategoriesService {
 
     if (!category) {
       throw new NotFoundException('Catégorie introuvable');
+    }
+
+    const productCount = await this.productRepository.count({
+      where: { categoryId: id },
+    });
+
+    if (productCount > 0) {
+      throw new BadRequestException(
+        'Impossible de supprimer une catégorie utilisée par des produits',
+      );
     }
 
     await this.categoryRepository.remove(category);

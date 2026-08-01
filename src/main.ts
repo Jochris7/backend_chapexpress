@@ -1,9 +1,13 @@
+import { mkdirSync } from 'fs';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
+import { PRODUCT_IMAGES_DIR } from './common/constants/paths.constant';
 
 async function bootstrap() {
+  mkdirSync(PRODUCT_IMAGES_DIR, { recursive: true });
+
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
@@ -15,6 +19,7 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
+      transform: true,
     }),
   );
 
