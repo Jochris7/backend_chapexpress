@@ -9,6 +9,7 @@ import { unlink } from 'fs/promises';
 import { join } from 'path';
 import { Product } from './entities/product.entity';
 import { Category } from '../categories/entities/category.entity';
+import { OrderItem } from '../orders/entities/order-item.entity';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { FindProductsQueryDto } from './dto/find-products-query.dto';
@@ -21,6 +22,8 @@ export class ProductsService {
     private readonly productRepository: Repository<Product>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    @InjectRepository(OrderItem)
+    private readonly orderItemRepository: Repository<OrderItem>,
   ) {}
 
   findAll(query: FindProductsQueryDto) {
@@ -115,6 +118,17 @@ export class ProductsService {
 
   async remove(id: string) {
     const product = await this.findOne(id);
+
+    const orderItemCount = await this.orderItemRepository.count({
+      where: { productId: id },
+    });
+
+    if (orderItemCount > 0) {
+      throw new BadRequestException(
+        'Impossible de supprimer un produit déjà présent dans des commandes',
+      );
+    }
+
     await this.deleteImageFile(product.imageUrl);
     await this.productRepository.remove(product);
   }
